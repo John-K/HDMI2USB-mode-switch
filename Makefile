@@ -11,6 +11,7 @@ conda:
 	conda config --add channels timvideos
 	conda install openocd
 	pip install pyusb
+	pip install git+https://github.com/John-K/CypressFX.git
 	pip install pep8
 	pip install autopep8
 	pip install setuptools-pep8

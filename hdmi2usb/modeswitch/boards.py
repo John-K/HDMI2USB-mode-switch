@@ -21,6 +21,7 @@ from collections import namedtuple
 
 from . import lsusb as usbapi
 from . import files
+from CypressFX import FX2
 
 
 def assert_in(needle, haystack):
@@ -122,27 +123,22 @@ def load_fx2(board, mode=None, filename=None, verbose=False):
 
     sys.stderr.write("Using FX2 firmware %s\n" % filename)
 
-    cmdline = "fxload -t fx2lp".split()
-    cmdline += ["-D", str(board.dev.path)]
-    cmdline += ["-I", filepath]
-    if verbose:
-        cmdline += ["-v", ]
-
-    if verbose:
-        sys.stderr.write("Running %r\n" % " ".join(cmdline))
-
-    env = os.environ.copy()
-    env['PATH'] = env['PATH'] + ':/usr/sbin:/sbin'
+    fx2 = FX2(board.dev)
+    if not fx2:
+        print("Could not intantiate FX2 from {}".format(board.dev._str()))
+        raise
 
     try:
-        output = subprocess.check_output(
-            cmdline, stderr=subprocess.STDOUT, env=env)
-        if verbose > 2:
-            sys.stderr.write(output.decode('utf-8'))
-    except subprocess.CalledProcessError as e:
-        if b"can't modify CPUCS: Protocol error\n" not in e.output:
-            print(e.output)
+        bytes_programmed = fx2.load_intelhex_firmware(filepath)
+        if bytes_programmed < 1:
+            print("Was unable to program any bytes to {}".format(
+                  board.dev._str()))
             raise
+        if verbose > 2:
+            print("Programmed {} bytes".format(bytes_programmed))
+    except IOError as e:
+        print(e.args[-1])
+        raise
 
 
 def flash_fx2(board, filename, verbose=False):
