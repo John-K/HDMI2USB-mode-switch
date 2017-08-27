@@ -104,7 +104,10 @@ BoardBase = namedtuple("Board", ["dev", "type", "state"])
 class Board(BoardBase):
 
     def tty(self):
-        return self.dev.tty()
+        try:
+            return self.dev.tty()
+        except AttributeError:
+            return None
 
 
 def load_fx2(board, mode=None, filename=None, verbose=False):

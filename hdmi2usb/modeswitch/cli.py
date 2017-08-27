@@ -179,7 +179,7 @@ def find_boards(args):
                 board.state,
                 board.dev.path,
             ))
-            for sp in board.dev.syspaths:
+            for sp in getattr(board.dev, "syspaths", []):
                 sys.stderr.write(" %s\n" % (sp,))
 
             if board.dev.inuse():

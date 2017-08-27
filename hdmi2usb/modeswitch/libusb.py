@@ -46,6 +46,12 @@ class LibDevice(DeviceBase):
             if dev.is_kernel_driver_active(inf.bInterfaceNumber):
                 dev.detach_kernel_driver(inf.bInterfaceNumber)
 
+    def drivers(self):
+        if self.inuse():
+            return ["unknown"]
+        else:
+            return []
+
     def libusb_open(self):
         return usb.core.find(bus=self.path.bus, address=self.path.address)
 
