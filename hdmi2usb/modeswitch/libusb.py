@@ -21,8 +21,7 @@ class LibDevice(DeviceBase):
     def inuse(self, dev=None):
         try:
             if dev is None:
-                dev = usb.core.find(bus=self.path.bus,
-                                    address=self.path.address)
+                dev = self.libusb_open()
 
             # config = dev.get_active_configuration()
             active = False
@@ -37,7 +36,7 @@ class LibDevice(DeviceBase):
 
     def detach(self):
         # Detach any driver currently attached.
-        dev = usb.core.find(bus=self.path.bus, address=self.path.address)
+        dev = self.libusb_open()
 
         if not self.inuse(dev):
             return True
@@ -46,6 +45,9 @@ class LibDevice(DeviceBase):
         for inf in config:
             if dev.is_kernel_driver_active(inf.bInterfaceNumber):
                 dev.detach_kernel_driver(inf.bInterfaceNumber)
+
+    def libusb_open(self):
+        return usb.core.find(bus=self.path.bus, address=self.path.address)
 
 
 Device = LibDevice

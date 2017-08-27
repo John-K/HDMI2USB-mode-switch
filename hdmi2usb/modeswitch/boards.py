@@ -19,7 +19,7 @@ import re
 
 from collections import namedtuple
 
-from . import lsusb as usbapi
+from . import libusb as usbapi
 from . import files
 from CypressFX import FX2
 
@@ -123,7 +123,7 @@ def load_fx2(board, mode=None, filename=None, verbose=False):
 
     sys.stderr.write("Using FX2 firmware %s\n" % filename)
 
-    fx2 = FX2(board.dev)
+    fx2 = FX2(board.dev.libusb_open())
     if not fx2:
         print("Could not intantiate FX2 from {}".format(board.dev._str()))
         raise
